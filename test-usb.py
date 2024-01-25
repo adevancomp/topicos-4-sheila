@@ -18,8 +18,8 @@ def ler_dados_serial():
 while True:
     try:
         dados_arduino = ler_dados_serial()
-        
-        if dados_arduino:
+
+        if dados_arduino and len(dados_arduino.split(','))>=1:
             # Separa os dados usando a vírgula como delimitador
             dados_separados = dados_arduino.split(',')
 
