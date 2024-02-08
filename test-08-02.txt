@@ -1,0 +1,84 @@
+#include "CO2Sensor.h"
+#include "MQ7.h"
+#include <DHT11.h>
+#include <TinyGPSPlus.h>
+
+// Inicialização dos sensores
+MQ7 mq7(34, 5);
+CO2Sensor co2Sensor(35, 0.09, 100);
+DHT11 dht11(4);
+
+// Inicialização do módulo GPS
+TinyGPSPlus gps;
+
+void setup() {
+  Serial.begin(9600);
+  while (!Serial) {
+    ; // Aguarda a conexão serial
+  }
+
+  Serial2.begin(9600); // Inicializa a comunicação serial para o módulo GPS
+  delay(300); // Aguarda a estabilização da comunicação
+
+  Serial.println("Calibrating MQ7 and co2 sensor");
+  mq7.calibrate();
+  co2Sensor.calibrate();
+  Serial.println("Calibration done!");
+}
+
+void loop() {
+  delay(1000);
+
+  // Leitura dos dados do sensor DHT11
+  double temperature = dht11.readTemperature();
+  delay(50);
+  double humidity = dht11.readHumidity();
+  delay(10);
+
+  // Leitura dos dados do sensor MQ7 e CO2
+  double co = mq7.readPpm();
+  delay(10);
+  double co2 = co2Sensor.read();
+
+  // Leitura dos dados do módulo GPS
+  while (Serial2.available() > 0) {
+    if (gps.encode(Serial2.read())) {
+      displayGPSInfo();
+    }
+  }
+
+  // Verifica se os dados do DHT11 são válidos
+  if (temperature != DHT11::ERROR_CHECKSUM && temperature != DHT11::ERROR_TIMEOUT &&
+      humidity != DHT11::ERROR_CHECKSUM && humidity != DHT11::ERROR_TIMEOUT) {
+
+    // Exibe os dados de umidade, temperatura, CO e CO2
+    Serial.print("Data e Hora: ");
+    Serial.print(gps.time.isValid() ? gps.time.hour() : 0);
+    Serial.print(":");
+    Serial.print(gps.time.isValid() ? gps.time.minute() : 0);
+    Serial.print(":");
+    Serial.print(gps.time.isValid() ? gps.time.second() : 0);
+    Serial.print(",");
+    Serial.print("Concentração de CO: ");
+    Serial.print(co);
+    Serial.print(",");
+    Serial.print("Concentração de CO2: ");
+    Serial.print(co2);
+    Serial.print(",");
+    Serial.print("Umidade: ");
+    Serial.print(humidity);
+    Serial.print(",");
+    Serial.print("Temperatura: ");
+    Serial.print(temperature);
+    Serial.println("");
+  }
+}
+
+void displayGPSInfo() {
+  // Exibe informações de localização se os dados do GPS são válidos
+  Serial.print("Latitude: ");
+  Serial.print(gps.location.isValid() ? gps.location.lat() : 0.0, 6);
+  Serial.print(", Longitude: ");
+  Serial.print(gps.location.isValid() ? gps.location.lng() : 0.0, 6);
+  Serial.println();
+}
