@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    platform: postgres
+    driver-class-name: org.postgres.Driver
+    url: ${MY_DATASOURCE_URL}
+    username: ${MY_POSTGRES_USER}
+    password: ${MY_POSTGRES_PASSWORD}
+  jpa:
+    properties:
+      hibernate:
+        format-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    database: POSTGRESQL
+  mail:
+    host: ${MAIL_SENDER_HOST}
+    port: ${MAIL_SENDER_PORT}
+    username: ${MAIL_SENDER_USERNAME}
+    password: ${MAIL_SENDER_PASSWORD}
+    properties:
+      transport:
+        protocol: ${MAIL_SENDER_PROTOCOL}
+      debug: ${MAIL_SENDER_DEBUG}
+      smtp:
+        auth: ${MAIL_SENDER_AUTH}
+        starttls:
+          enable: ${MAIL_SENDER_STARTTLS_ENABLE}
+server:
+  port: ${MY_API_PORT}
+  servlet:
+    context-path: /aeroadventure/api
+mail-sender:
+  host: ${MAIL_SENDER_HOST}
+  port: ${MAIL_SENDER_PORT}
+  username: ${MAIL_SENDER_USERNAME}
+  password: ${MAIL_SENDER_PASSWORD}
+  protocol: ${MAIL_SENDER_PROTOCOL}
+  auth: ${MAIL_SENDER_AUTH}
+  starttls-enable: ${MAIL_SENDER_STARTTLS_ENABLE}
+  debug: ${MAIL_SENDER_DEBUG}
